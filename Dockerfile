@@ -34,4 +34,5 @@ COPY . .
 RUN mkdir -p /app/input /app/output
 
 # Command to run your script
-CMD ["python3", "main.py"]
+CMD ["python", "main.py", "input/input.json", "output/output.json"]
+
