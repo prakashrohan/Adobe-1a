@@ -76,16 +76,15 @@ langdetect==1.0.9
 ### 🔧 Build the image
 
 ```bash
-docker build -t pdf-outline .
+docker build --platform linux/amd64 -t
+mysolutionname:somerandomidentifier
 ```
 
 ### ▶️ Run the container
 
 ```bash
-docker run --rm \
-  -v $(pwd)/input:/app/input \
-  -v $(pwd)/output:/app/output \
-  pdf-outline
+docker run --rm -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output --
+network none mysolutionname:somerandomidentifier`
 ```
 
 ---
