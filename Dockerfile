@@ -1,38 +1,31 @@
-# Use official Python image
-FROM python:3.10-slim
-
-# Set environment variables
-ENV PDF_INPUT_DIR=/app/input
-ENV PDF_OUTPUT_DIR=/app/output
-ENV DEBIAN_FRONTEND=noninteractive
+# Use Python 3.11 slim base image with explicit AMD64 platform
+FROM --platform=linux/amd64 python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install OS dependencies for pdfplumber, pytesseract, PIL, etc.
-RUN apt-get update && \
-    apt-get install -y \
-    libpoppler-cpp-dev \
-    tesseract-ocr \
-    poppler-utils \
-    libglib2.0-0 \
-    libgl1 \
-    build-essential \
-    python3-dev \
-    libjpeg-dev \
-    zlib1g-dev \
+# Install system dependencies required for PDF processing
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libc6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy requirements file first for better Docker layer caching
 COPY requirements.txt .
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your Python script into the container
-COPY . .
+# Copy the main application file
+COPY main.py .
 
-# Create input and output folders
+# Create input and output directories as expected by the challenge
 RUN mkdir -p /app/input /app/output
 
-# Command to run your script
-CMD ["python", "main.py", "input/input.json", "output/output.json"]
+# Set environment variables for better Python behavior
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
+# Run the application with the required directories
+CMD ["python", "main.py", "--in_dir", "/app/input", "--out_dir", "/app/output"]
